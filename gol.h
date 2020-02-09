@@ -1,5 +1,6 @@
 struct universe {
 /*Put some appropriate things here*/
+    char cells[513][513];
 };
 
 /*Do not modify the next seven lines*/

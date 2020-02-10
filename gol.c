@@ -111,7 +111,6 @@ void read_in_file(FILE *infile, struct universe *u) {
 }
 
 void write_out_file(FILE *outfile, struct universe *u) {
-
     // Iterate through all of u and print contents
     for (int i = 0; i < u -> rows; i++) {
         for (int j = 0; j < u -> columns; j++) {
@@ -122,7 +121,22 @@ void write_out_file(FILE *outfile, struct universe *u) {
 }
 
 int is_alive(struct universe *u, int column, int row) {
-    return -1;
+    // Handle invalid indices
+    if (column < 0 || column >= u -> columns) {
+        fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", (u -> columns)-1);
+        exit(1);
+    } else if (row < 0 || row >= u -> rows) {
+        fprintf(stderr, "Error: Invalid index given. Only rows 0 to %d exist\n", (u -> rows)-1);
+        exit(1);
+    }
+
+    // Handle when cell is alive
+    if (strncmp(&(u -> cells[row][column]), "*", 1) == 0) {
+        return 1;
+    // Handle when cell is dead
+    } else {
+        return 0;
+    }
 }
 
 int will_be_alive(struct universe *u, int column, int row) {

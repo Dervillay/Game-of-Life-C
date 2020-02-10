@@ -5,10 +5,8 @@
 
 int main(int argc, char *argv[]) {
     struct universe u;
-    char fileLine[513];
 
     read_in_file(stdin, &u);
-
     write_out_file(stdout, &u);
 
     return 0;
@@ -34,13 +32,14 @@ void read_in_file(FILE *infile, struct universe *u) {
 
         // Return file position indicator back to start
         fseek(infile, 0, SEEK_SET);
+
     } else {
         fprintf(stderr, "Error: Supplied file cannot be NULL\n");
         exit(1);
     }
 
     // Allocate initial array_size columns in universe
-    if ((u -> cells = malloc(array_size * sizeof(char*))) == NULL) {
+    if ((u -> cells = malloc(array_size * sizeof(char**))) == NULL) {
         fprintf(stderr, "Error: Could not allocate memory for cells\n");
         exit(1);
     }
@@ -62,11 +61,11 @@ void read_in_file(FILE *infile, struct universe *u) {
         }
 
         // Calculate and store length of current line
-        for(i = 0; i <= strlen(line); i++) {
-            if(strncmp(&line[i], "\n", 1) == 0) {
+        for(int l = 0; l <= strlen(line); l++) {
+            if(strncmp(&line[l], "\n", 1) == 0) {
                 break;    	
             }
-            lineLen = i;
+            lineLen = l;
 	    }
 
         // Set prevLineLen on first loop
@@ -75,10 +74,10 @@ void read_in_file(FILE *infile, struct universe *u) {
         }
 
         // Allocate enough space in cells[i] for each char in the current line
-        if ((u -> cells[i] = realloc(u -> cells, lineLen * sizeof(char*))) == NULL) {
+        if ((u -> cells[i] = realloc(u -> cells[i], lineLen * sizeof(char))) == NULL) {
             fprintf(stderr, "Error: Ran out of memory\n");
-            exit(1);
             free(u); // Free u from memory
+            exit(1);
         }
 
         // Iterate through each item of the row and store chars in universe
@@ -111,7 +110,7 @@ void read_in_file(FILE *infile, struct universe *u) {
 }
 
 void write_out_file(FILE *outfile, struct universe *u) {
-    
+
 }
 
 int is_alive(struct universe *u, int column, int row) {

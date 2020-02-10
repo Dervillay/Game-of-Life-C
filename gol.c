@@ -8,7 +8,6 @@ int main(int argc, char *argv[]) {
 
     read_in_file(stdin, &u);
     write_out_file(stdout, &u);
-
     return 0;
 }
 
@@ -140,7 +139,105 @@ int is_alive(struct universe *u, int column, int row) {
 }
 
 int will_be_alive(struct universe *u, int column, int row) {
-    return -1;
+
+    // Handle invalid indices
+    if (column < 0 || column >= u -> columns) {
+        fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", (u -> columns)-1);
+        exit(1);
+    } else if (row < 0 || row >= u -> rows) {
+        fprintf(stderr, "Error: Invalid index given. Only rows 0 to %d exist\n", (u -> rows)-1);
+        exit(1);
+    }
+
+    // Initialise number of live neighbours to 0
+    int liveNeighbours = 0;
+
+    // Find number of live neighbours
+
+    // Cell is top left
+    if (column == 0 && row == 0) {
+        liveNeighbours += is_alive(u, column+1, row);
+        liveNeighbours += is_alive(u, column+1, row+1);
+        liveNeighbours += is_alive(u, column, row+1);
+
+    // Cell is bottom left
+    } else if (column == 0 && row == u -> rows-1) {
+        liveNeighbours += is_alive(u, column+1, row);
+        liveNeighbours += is_alive(u, column+1, row-1);
+        liveNeighbours += is_alive(u, column, row-1);
+
+    // Cell is bottom right
+    } else if (column == u -> columns-1 && row == u -> rows-1) {
+        liveNeighbours += is_alive(u, column, row-1);
+        liveNeighbours += is_alive(u, column-1, row-1);
+        liveNeighbours += is_alive(u, column-1, row);
+
+    // Cell is top right
+    } else if (column == u -> columns-1 && row == 0) {
+        liveNeighbours += is_alive(u, column, row+1);
+        liveNeighbours += is_alive(u, column-1, row+1);
+        liveNeighbours += is_alive(u, column-1, row);
+
+    // Cell lies along top edge
+    } else if (row == 0) {
+        liveNeighbours += is_alive(u, column+1, row);
+        liveNeighbours += is_alive(u, column+1, row+1);
+        liveNeighbours += is_alive(u, column, row+1);
+        liveNeighbours += is_alive(u, column-1, row+1);
+        liveNeighbours += is_alive(u, column-1, row);
+
+    // Cell lies along left edge
+    } else if (column == 0) {
+        liveNeighbours += is_alive(u, column, row+1);
+        liveNeighbours += is_alive(u, column+1, row+1);
+        liveNeighbours += is_alive(u, column+1, row);
+        liveNeighbours += is_alive(u, column+1, row-1);
+        liveNeighbours += is_alive(u, column, row-1);
+
+    // Cell lies along bottom edge
+    } else if (row == u -> rows-1) {
+        liveNeighbours += is_alive(u, column+1, row);
+        liveNeighbours += is_alive(u, column+1, row-1);
+        liveNeighbours += is_alive(u, column, row-1);
+        liveNeighbours += is_alive(u, column-1, row-1);
+        liveNeighbours += is_alive(u, column-1, row);
+
+    // Cell lies along right edge
+    } else if (column == u -> columns-1) {
+        liveNeighbours += is_alive(u, column, row+1);
+        liveNeighbours += is_alive(u, column-1, row+1);
+        liveNeighbours += is_alive(u, column-1, row);
+        liveNeighbours += is_alive(u, column-1, row-1);
+        liveNeighbours += is_alive(u, column, row-1);
+
+    // Cell lies elsewhere
+    } else {
+        liveNeighbours += is_alive(u, column+1, row);
+        liveNeighbours += is_alive(u, column+1, row-1);
+        liveNeighbours += is_alive(u, column, row-1);
+        liveNeighbours += is_alive(u, column-1, row-1);
+        liveNeighbours += is_alive(u, column-1, row);
+        liveNeighbours += is_alive(u, column-1, row+1);
+        liveNeighbours += is_alive(u, column, row+1);
+        liveNeighbours += is_alive(u, column+1, row+1);
+    }
+
+    // Cell is currently alive
+    if (is_alive(u, column, row)) {
+        if (liveNeighbours == 2 || liveNeighbours == 3) {
+            return 1;
+        } else {
+            return 0;
+        }
+    // Cell is currently dead
+    } else {
+        if (liveNeighbours == 3) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 }
 
 int will_be_alive_torus(struct universe *u,  int column, int row) {

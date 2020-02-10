@@ -39,7 +39,7 @@ void read_in_file(FILE *infile, struct universe *u) {
     }
 
     // Allocate initial array_size columns in universe
-    if ((u -> cells = malloc(array_size * sizeof(char**))) == NULL) {
+    if ((u -> cells = malloc(array_size * sizeof(char*))) == NULL) {
         fprintf(stderr, "Error: Could not allocate memory for cells\n");
         exit(1);
     }
@@ -74,7 +74,7 @@ void read_in_file(FILE *infile, struct universe *u) {
         }
 
         // Allocate enough space in cells[i] for each char in the current line
-        if ((u -> cells[i] = realloc(u -> cells[i], lineLen * sizeof(char))) == NULL) {
+        if ((u -> cells[i] = realloc(u -> cells[i], lineLen * sizeof(char*))) == NULL) {
             fprintf(stderr, "Error: Ran out of memory\n");
             free(u); // Free u from memory
             exit(1);
@@ -82,16 +82,13 @@ void read_in_file(FILE *infile, struct universe *u) {
 
         // Iterate through each item of the row and store chars in universe
         for (int j = 0; j < strlen(line); j++) {
-            
             if (lineLen != prevLineLen) { // Detect inconsistent line lengths and print error
                 fprintf(stderr, "Error: File supplied contains inconsistent row lengths\n");
                 exit(1);
             } else if (strncmp(&line[j], ".", 1) == 0) { // Detect . char
                 u -> cells[i][j] = line[j];
-                printf("%c", u -> cells[i][j]);
             } else if (strncmp(&line[j], "*", 1) == 0) { // Detect * char
                 u -> cells[i][j] = line[j];
-                printf("%c", u -> cells[i][j]);
             } else if (strncmp(&line[j], "\n", 1) == 0) { // Detect and skip newlines
                 continue;
             } else { // Detect invalid characters and print error
@@ -99,18 +96,29 @@ void read_in_file(FILE *infile, struct universe *u) {
                 exit(1);
             }
         }
-        printf("\n");
 
+        // Increment number of rows and update prevLineLen
         i += 1;
         prevLineLen = lineLen;
     }
 
     // Close file after reading
     fclose(infile);
+
+    // Set number of rows and columns in u
+    u -> rows = i;
+    u -> columns = lineLen;
 }
 
 void write_out_file(FILE *outfile, struct universe *u) {
 
+    // Iterate through all of u and print contents
+    for (int i = 0; i < u -> rows; i++) {
+        for (int j = 0; j < u -> columns; j++) {
+            fprintf(outfile, "%c", u -> cells[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 int is_alive(struct universe *u, int column, int row) {

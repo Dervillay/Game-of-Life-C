@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
 
     read_in_file(stdin, &u);
     write_out_file(stdout, &u);
-    evolve(&u, will_be_alive);
+    evolve(&u, will_be_alive_torus);
     return 0;
 }
 
@@ -140,7 +140,6 @@ int is_alive(struct universe *u, int column, int row) {
 }
 
 int will_be_alive(struct universe *u, int column, int row) {
-
     // Handle invalid indices
     if (column < 0 || column >= u -> columns) {
         fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", (u -> columns)-1);
@@ -242,7 +241,60 @@ int will_be_alive(struct universe *u, int column, int row) {
 }
 
 int will_be_alive_torus(struct universe *u,  int column, int row) {
-    return -1;
+    // Store number of columns and rows
+    int columns = u -> columns;
+    int rows = u -> rows;
+
+    // Set initial pre column and row values
+    int preColumn = column;
+    int preRow = row;
+
+    // Initialise number of live neighbours to 0
+    int liveNeighbours = 0;
+
+    // Handle invalid indices
+    if (column < 0 || column >= columns) {
+        fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", columns-1);
+        exit(1);
+    } else if (row < 0 || row >= rows) {
+        fprintf(stderr, "Error: Invalid index given. Only rows 0 to %d exist\n", rows-1);
+        exit(1);
+    }
+
+    // Handle if columns/rows would go negative
+    if (column == 0) {
+        preColumn = columns;
+    }
+    if (row == 0) {
+        preRow = rows;
+    }
+
+    // Find number of live neighbours
+    liveNeighbours += is_alive(u, (column+1) % columns, row);
+    liveNeighbours += is_alive(u, (column+1) % columns, preRow-1);
+    liveNeighbours += is_alive(u, column, preRow-1);
+    liveNeighbours += is_alive(u, preColumn-1, preRow-1);
+    liveNeighbours += is_alive(u, preColumn-1, row);
+    liveNeighbours += is_alive(u, preColumn-1, (row+1) % rows);
+    liveNeighbours += is_alive(u, column, (row+1) % rows);
+    liveNeighbours += is_alive(u, (column+1) % columns, (row+1) % rows);
+
+    // Cell is currently alive
+    if (is_alive(u, column, row)) {
+        if (liveNeighbours == 2 || liveNeighbours == 3) {
+            return 1;
+        } else {
+            return 0;
+        }
+    // Cell is currently dead
+    } else {
+        if (liveNeighbours == 3) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 }
 
 void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int row)) {

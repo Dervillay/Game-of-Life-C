@@ -1,12 +1,8 @@
-all: gol.c func.o
-	gcc -Wall -o gameoflife main.o func.o
+all: gol.o gameoflife.c
+	gcc -Wall -Wextra -pedantic -std=c11 -o gameoflife gameoflife.c gol.o
 
-func.o: gol.c gol.h
-	gcc -Wall -c func.c
-
-main.o: gol.c
-	gcc -Wall -c gol.c
+gol.o: gol.c gol.h
+	gcc -Wall -Wextra -pedantic -std=c11 -c gol.c
 
 clean:
-	rm -rf gameoflife gol.o
-
+	rm -rf gol.o gameoflife

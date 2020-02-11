@@ -3,16 +3,6 @@
 #include <string.h>
 #include"gol.h"
 
-int main(int argc, char *argv[]) {
-    struct universe u;
-
-    read_in_file(stdin, &u);
-    evolve(&u, will_be_alive_torus);
-    print_statistics(&u);
-    write_out_file(stdout, &u);
-    return 0;
-}
-
 void read_in_file(FILE *infile, struct universe *u) {
     char line[514]; // Initialise list to hold max 512 characters (\r and \n characters)
     int array_size = 1; // Set abritrary starting size for input
@@ -62,7 +52,7 @@ void read_in_file(FILE *infile, struct universe *u) {
         }
 
         // Calculate and store length of current line
-        for(int l = 0; l <= strlen(line); l++) {
+        for(int l = 0; l <= (int) strlen(line); l++) {
             if(strncmp(&line[l], "\n", 1) == 0) {
                 break;    	
             }
@@ -82,7 +72,7 @@ void read_in_file(FILE *infile, struct universe *u) {
         }
 
         // Iterate through each item of the row and store chars in universe
-        for (int j = 0; j < strlen(line); j++) {
+        for (int j = 0; j < (int) strlen(line); j++) {
             if (lineLen != prevLineLen) { // Detect inconsistent line lengths and print error
                 fprintf(stderr, "Error: File supplied contains inconsistent row lengths\n");
                 exit(1);

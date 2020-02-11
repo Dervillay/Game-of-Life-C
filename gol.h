@@ -1,5 +1,4 @@
 struct universe {
-/*Put some appropriate things here*/
     char **cells; // 2D array of cells and their current states
     int rows; // Number of rows
     int columns; // Number of columns

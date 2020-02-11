@@ -7,18 +7,19 @@ int main(int argc, char *argv[]) {
     struct universe u;
 
     read_in_file(stdin, &u);
-    write_out_file(stdout, &u);
     evolve(&u, will_be_alive_torus);
+    print_statistics(&u);
+    write_out_file(stdout, &u);
     return 0;
 }
 
 void read_in_file(FILE *infile, struct universe *u) {
-    // Initialise list to hold max 512 characters (plus termination character)
-    char line[514];
+    char line[514]; // Initialise list to hold max 512 characters (\r and \n characters)
     int array_size = 1; // Set abritrary starting size for input
     int i = 0; // Track num of rows in file
-    int lineLen = 0; // Track length of each row's length (num of columns)
+    int lineLen = 0; // Track length of each row (num of columns)
     int prevLineLen = -1; // Track length of previous row's length
+    int numAlive = 0; // Track number of alive cells in provided grid
 
     // Check infile is not blank
     if (infile != NULL) {
@@ -87,8 +88,9 @@ void read_in_file(FILE *infile, struct universe *u) {
                 exit(1);
             } else if (strncmp(&line[j], ".", 1) == 0) { // Detect . char
                 u -> cells[i][j] = line[j];
-            } else if (strncmp(&line[j], "*", 1) == 0) { // Detect * char
+            } else if (strncmp(&line[j], "*", 1) == 0) { // Detect * char and increment numAlive
                 u -> cells[i][j] = line[j];
+                numAlive += 1;
             } else if (strncmp(&line[j], "\n", 1) == 0) { // Detect and skip newlines
                 continue;
             } else { // Detect invalid characters and print error
@@ -108,6 +110,11 @@ void read_in_file(FILE *infile, struct universe *u) {
     // Set number of rows and columns in u
     u -> rows = i;
     u -> columns = lineLen;
+
+    // Set number of alive cells in u, initialise generation and prevAvgAlive to 0
+    u -> numAlive = numAlive;
+    u -> generation = 0;
+    u -> prevAvgAlive = 0;
 }
 
 void write_out_file(FILE *outfile, struct universe *u) {
@@ -303,11 +310,15 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
     int rows = u -> rows;
     char cells[rows][columns];
 
+    // Initialise number of live cells to 0
+    int numAlive = 0;
+
     // Calculate next generation and store in cells
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             if (rule(u, j, i) == 1) {
                 cells[i][j] = '*';
+                numAlive += 1;
             } else {
                 cells[i][j] = '.';
             }
@@ -320,8 +331,18 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
             u -> cells[i][j] = cells[i][j];
         }
     }
+
+    // Update generation, numAlive and prevAvgAlive
+    u -> generation += 1;
+    u -> numAlive = numAlive;
+    u -> prevAvgAlive = (float)(((u -> prevAvgAlive * (u -> generation-1)) + numAlive) / (u -> generation));
 }
 
 void print_statistics(struct universe *u) {
+    // Print percentage of cells currently alive
+    fprintf(stdout, "%.3f%% of cells alive\n", (float) (u -> numAlive) / ((u -> rows) * (u -> columns)));
+
+    // Print percentage of cells alive on average across all generations
+    fprintf(stdout, "%.3f%% of cells alive on average\n", (float) (u -> prevAvgAlive) / ((u -> rows) * (u -> columns)));
 
 }

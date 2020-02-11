@@ -1,8 +1,11 @@
 struct universe {
 /*Put some appropriate things here*/
-    char **cells;
-    int rows;
-    int columns;
+    char **cells; // 2D array of cells and their current states
+    int rows; // Number of rows
+    int columns; // Number of columns
+    int generation; // Number indicating which generation the universe is (beginning at 0)
+    int numAlive; // Number of alive cells in current generation
+    float prevAvgAlive; // Average number of cells alive across all previous generations
 };
 
 /*Do not modify the next seven lines*/

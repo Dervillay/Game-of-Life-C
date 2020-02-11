@@ -111,7 +111,7 @@ void read_in_file(FILE *infile, struct universe *u) {
     u -> rows = i;
     u -> columns = lineLen;
 
-    // Set number of alive cells in u, initialise generation and prevAvgAlive to 0
+    // Set number of alive cells in u and initialise generation & prevAvgAlive to 0
     u -> numAlive = numAlive;
     u -> generation = 0;
     u -> prevAvgAlive = 0;
@@ -319,8 +319,11 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
             if (rule(u, j, i) == 1) {
                 cells[i][j] = '*';
                 numAlive += 1;
-            } else {
+            } else if (rule(u, j, i) == 0){
                 cells[i][j] = '.';
+            } else {
+                fprintf(stderr, "Error: Given rule returned non-binary value\n");
+                exit(1);
             }
         }
     }
@@ -335,14 +338,13 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
     // Update generation, numAlive and prevAvgAlive
     u -> generation += 1;
     u -> numAlive = numAlive;
-    u -> prevAvgAlive = (float)(((u -> prevAvgAlive * (u -> generation-1)) + numAlive) / (u -> generation));
+    u -> prevAvgAlive = (((u -> prevAvgAlive * (u -> generation-1)) + numAlive) / (u -> generation));
 }
 
 void print_statistics(struct universe *u) {
     // Print percentage of cells currently alive
-    fprintf(stdout, "%.3f%% of cells alive\n", (float) (u -> numAlive) / ((u -> rows) * (u -> columns)));
+    fprintf(stdout, "%.3f%% of cells currently alive\n", (float) (u -> numAlive) / ((u -> rows) * (u -> columns)));
 
     // Print percentage of cells alive on average across all generations
     fprintf(stdout, "%.3f%% of cells alive on average\n", (float) (u -> prevAvgAlive) / ((u -> rows) * (u -> columns)));
-
 }

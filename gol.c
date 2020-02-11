@@ -8,6 +8,7 @@ int main(int argc, char *argv[]) {
 
     read_in_file(stdin, &u);
     write_out_file(stdout, &u);
+    evolve(&u, will_be_alive);
     return 0;
 }
 
@@ -245,7 +246,28 @@ int will_be_alive_torus(struct universe *u,  int column, int row) {
 }
 
 void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int row)) {
+    // Get column & row lengths and initialise 2D array to store next generation
+    int columns = u -> columns;
+    int rows = u -> rows;
+    char cells[rows][columns];
 
+    // Calculate next generation and store in cells
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            if (rule(u, j, i) == 1) {
+                cells[i][j] = '*';
+            } else {
+                cells[i][j] = '.';
+            }
+        }
+    }
+
+    // Replace u -> cells with cells
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            u -> cells[i][j] = cells[i][j];
+        }
+    }
 }
 
 void print_statistics(struct universe *u) {

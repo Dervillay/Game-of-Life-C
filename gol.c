@@ -113,8 +113,11 @@ void write_out_file(FILE *outfile, struct universe *u) {
         for (int j = 0; j < u -> columns; j++) {
             fprintf(outfile, "%c", u -> cells[i][j]);
         }
-        printf("\n");
+        fprintf(outfile, "\n");
     }
+
+    // Close file after writing
+    fclose(outfile);
 }
 
 int is_alive(struct universe *u, int column, int row) {

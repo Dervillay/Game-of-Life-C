@@ -10,6 +10,9 @@ int main(int argc, char *argv[]){
   FILE *outfile;
   int infileSpecified = 0;
   int outfileSpecified = 0;
+  int numGenerations = 5;
+  int printStats = 0;
+  int useTorus = 0;
 
   // Loop through args
   for (int i = 1; i < argc; i++) {
@@ -18,7 +21,7 @@ int main(int argc, char *argv[]){
     if (argv[i][0] == '-') {
 
       switch(argv[i][1]) {
-        
+
         // Handle supplied input file
         case 'i':
           infileSpecified = 1; // Set flag
@@ -44,23 +47,65 @@ int main(int argc, char *argv[]){
             exit(-1);
           } 
           break;
+
+        // Handle specified number of generations
+        case 'g':
+          numGenerations = atoi(argv[i+1]);
+          break;
+
+        // Handle printing statistics
+        case 's':
+          printStats = 1;
+          break;
+
+        // Switch to torus topology rule
+        case 't':
+          useTorus = 1;
+          break;
+
+        // Handle unrecognised arguments
+        default:
+          fprintf(stderr, "Error: %s is not a valid argument\n", argv[i]);
+          exit(1);
       }
     }
   }
 
   // If no file given, ask for it manually
-  if (infileSpecified == 0) {
+  if (!infileSpecified) {
     // TODO
   }
 
   // If no output file specified, output to stdout
-  if (outfileSpecified == 0) {
+  if (!outfileSpecified) {
     outfile = stdout;
   }
 
+  // Read in supplied file
   read_in_file(infile, &v);
-  evolve(&v,will_be_alive_torus);
-  write_out_file(outfile,&v);
+
+  // Close infile
+  fclose(infile);
+
+  // Call evolve numGenerations times
+  for (int j = 0; j < numGenerations; j++) {
+    if (useTorus) {
+      evolve(&v, will_be_alive_torus);
+    } else {
+      evolve(&v, will_be_alive);
+    }
+  }
+
+  // Write result to outfile
+  write_out_file(outfile, &v);
+
+  // Print statistics if asked for
+  if (printStats) {
+    print_statistics(&v);
+  }
+
+  // Close outfile
+  fclose(outfile);
 
   return 0;
 }

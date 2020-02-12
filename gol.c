@@ -115,9 +115,6 @@ void write_out_file(FILE *outfile, struct universe *u) {
         }
         fprintf(outfile, "\n");
     }
-
-    // Close file after writing
-    fclose(outfile);
 }
 
 int is_alive(struct universe *u, int column, int row) {
@@ -312,7 +309,7 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
             if (rule(u, j, i) == 1) {
                 cells[i][j] = '*';
                 numAlive += 1;
-            } else if (rule(u, j, i) == 0){
+            } else if (rule(u, j, i) == 0) {
                 cells[i][j] = '.';
             } else {
                 fprintf(stderr, "Error: Given rule returned non-binary value\n");

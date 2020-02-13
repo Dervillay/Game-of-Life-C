@@ -35,7 +35,7 @@ void read_in_file(FILE *infile, struct universe *u) {
         exit(1);
     }
 
-    while (fscanf(infile, "%s", line) != EOF) {
+    while (fgets(line, 514, infile) != NULL) {
         // Reallocate more memory if neccesary
         if (i >= array_size) {
             char **newp;

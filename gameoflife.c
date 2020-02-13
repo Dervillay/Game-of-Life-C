@@ -1,9 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<ctype.h>
 #include"gol.h"
 
 int main(int argc, char *argv[]){
   struct universe v; 
+  char manualInput[2048];
   char *infileName;
   char *outfileName;
   FILE *infile;
@@ -30,7 +32,7 @@ int main(int argc, char *argv[]){
 
           // Check file has been opened successfully
           if (infile == NULL) {   
-            fprintf(stderr, "Error: Could not open specified file\n"); 
+            fprintf(stderr, "Error: Could not open specified file, please check that one was provided.\n"); 
             exit(-1);
           } 
           break;
@@ -43,13 +45,22 @@ int main(int argc, char *argv[]){
 
           // Check file has been opened successfully
           if (outfile == NULL) {   
-            fprintf(stderr, "Error: Could not open specified file\n"); 
+            fprintf(stderr, "Error: Could not open specified file, please check that one was provided.\n"); 
             exit(-1);
           } 
           break;
 
         // Handle specified number of generations
         case 'g':
+          // Check supplied argument is a number
+          for (int j = 0; argv[i+1][j] != '\0'; j++) {
+            if (!isdigit(argv[i+1][j])) {
+              printf("%c\n", argv[i+1][j]);
+              fprintf(stderr, "Error: -g argument received an invalid value, please check the value supplied is an integer.\n");
+              exit(1);
+            }
+          }
+
           numGenerations = atoi(argv[i+1]);
           break;
 
@@ -68,17 +79,32 @@ int main(int argc, char *argv[]){
           fprintf(stderr, "Error: %s is not a valid argument\n", argv[i]);
           exit(1);
       }
+
+    // Handle non args not in -arg format
+    } else {
+      if (argv[i-1][0] != '-') {
+        fprintf(stderr, "Error: %s is not a valid argument\n", argv[i]);
+        exit(1);
+      }
     }
   }
 
   // If no file given, ask for it manually
   if (!infileSpecified) {
-    // TODO
-  }
+    printf("No input file provided. Please enter file contents of an initial universe configuration (max 2048 chars):\n");
+    scanf("%s", manualInput);
 
-  // If no output file specified, output to stdout
-  if (!outfileSpecified) {
-    outfile = stdout;
+    // Create new file "input.txt" and open
+    infile = fopen("input.txt", "w");
+
+    // Check file has been opened successfully
+    if (infile == NULL) {   
+      fprintf(stderr, "Error: Could not open inputted file\n"); 
+      exit(-1);
+    } 
+
+    // Store contents of manualInput in infile
+    fputs(manualInput, infile);
   }
 
   // Read in supplied file
@@ -94,6 +120,11 @@ int main(int argc, char *argv[]){
     } else {
       evolve(&v, will_be_alive);
     }
+  }
+
+  // If no output file specified, output to stdout
+  if (!outfileSpecified) {
+    outfile = stdout;
   }
 
   // Write result to outfile

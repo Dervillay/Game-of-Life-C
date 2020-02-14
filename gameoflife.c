@@ -5,7 +5,6 @@
 
 int main(int argc, char *argv[]){
   struct universe v; 
-  char manualInput[2048];
   char *infileName;
   char *outfileName;
   FILE *infile;
@@ -32,7 +31,7 @@ int main(int argc, char *argv[]){
 
           // Check file has been opened successfully
           if (infile == NULL) {   
-            fprintf(stderr, "Error: Could not open specified file, please check that one was provided.\n"); 
+            fprintf(stderr, "Error: Could not open specified input file, please check that one was provided.\n"); 
             exit(-1);
           } 
           break;
@@ -45,7 +44,7 @@ int main(int argc, char *argv[]){
 
           // Check file has been opened successfully
           if (outfile == NULL) {   
-            fprintf(stderr, "Error: Could not open specified file, please check that one was provided.\n"); 
+            fprintf(stderr, "Error: Could not open specified output file, please check that one was provided.\n"); 
             exit(-1);
           } 
           break;
@@ -80,7 +79,7 @@ int main(int argc, char *argv[]){
           exit(1);
       }
 
-    // Handle non args not in -arg format
+    // Handle unrecognised args that aren't in -arg format
     } else {
       if (argv[i-1][0] != '-') {
         fprintf(stderr, "Error: %s is not a valid argument\n", argv[i]);
@@ -91,20 +90,8 @@ int main(int argc, char *argv[]){
 
   // If no file given, ask for it manually
   if (!infileSpecified) {
-    printf("No input file provided. Please enter file contents of an initial universe configuration (max 2048 chars):\n");
-    scanf("%s", manualInput);
-
-    // Create new file "input.txt" and open
-    infile = fopen("input.txt", "w");
-
-    // Check file has been opened successfully
-    if (infile == NULL) {   
-      fprintf(stderr, "Error: Could not open inputted file\n"); 
-      exit(-1);
-    } 
-
-    // Store contents of manualInput in infile
-    fputs(manualInput, infile);
+    printf("No input file provided. Please manually enter an initial universe configuration:\n");
+    infile = stdin;
   }
 
   // Read in supplied file
@@ -125,6 +112,11 @@ int main(int argc, char *argv[]){
   // If no output file specified, output to stdout
   if (!outfileSpecified) {
     outfile = stdout;
+
+    // If no input, add linebreak for neatness
+    if (!infileSpecified) {
+      printf("\n");
+    }
   }
 
   // Write result to outfile

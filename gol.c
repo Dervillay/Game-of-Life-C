@@ -12,7 +12,7 @@ void read_in_file(FILE *infile, struct universe *u) {
     int numAlive = 0; // Track number of alive cells in provided grid
 
     // Check infile is not blank
-    if (infile != NULL) {
+    if (infile != stdin) {
         fseek(infile, 0, SEEK_END);
         int fileSize = ftell(infile);
 
@@ -23,10 +23,6 @@ void read_in_file(FILE *infile, struct universe *u) {
 
         // Return file position indicator back to start
         fseek(infile, 0, SEEK_SET);
-
-    } else {
-        fprintf(stderr, "Error: Supplied file cannot be NULL\n");
-        exit(1);
     }
 
     // Allocate initial array_size columns in universe
@@ -35,7 +31,7 @@ void read_in_file(FILE *infile, struct universe *u) {
         exit(1);
     }
 
-    while (fgets(line, 514, infile) != NULL) {
+    while (fscanf(infile, "%s", line) != EOF) {
         // Reallocate more memory if neccesary
         if (i >= array_size) {
             char **newp;

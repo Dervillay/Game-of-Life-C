@@ -4,7 +4,7 @@ struct universe {
     int columns; // Number of columns
     int generation; // Number indicating which generation the universe is (beginning at 0)
     int numAlive; // Number of alive cells in current generation
-    int prevAvgAlive; // Average number of cells alive across all previous generations
+    float prevAvgAlive; // Average number of cells alive across all previous generations
 };
 
 /*Do not modify the next seven lines*/

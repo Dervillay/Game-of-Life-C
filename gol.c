@@ -100,7 +100,7 @@ void read_in_file(FILE *infile, struct universe *u) {
     // Set number of alive cells in u and initialise generation & prevAvgAlive to 0
     u -> numAlive = numAlive;
     u -> generation = 0;
-    u -> prevAvgAlive = 0;
+    u -> prevAvgAlive = 0.0;
 }
 
 void write_out_file(FILE *outfile, struct universe *u) {
@@ -114,12 +114,16 @@ void write_out_file(FILE *outfile, struct universe *u) {
 }
 
 int is_alive(struct universe *u, int column, int row) {
+    // Store number of columns and rows
+    int columns = u -> columns;
+    int rows = u -> rows;
+
     // Handle invalid indices
-    if (column < 0 || column >= u -> columns) {
-        fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", (u -> columns)-1);
+    if (column < 0 || column >= columns) {
+        fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", columns-1);
         exit(1);
-    } else if (row < 0 || row >= u -> rows) {
-        fprintf(stderr, "Error: Invalid index given. Only rows 0 to %d exist\n", (u -> rows)-1);
+    } else if (row < 0 || row >= rows) {
+        fprintf(stderr, "Error: Invalid index given. Only rows 0 to %d exist\n", rows-1);
         exit(1);
     }
 
@@ -133,12 +137,16 @@ int is_alive(struct universe *u, int column, int row) {
 }
 
 int will_be_alive(struct universe *u, int column, int row) {
+    // Store number of columns and rows
+    int columns = u -> columns;
+    int rows = u -> rows;
+
     // Handle invalid indices
-    if (column < 0 || column >= u -> columns) {
-        fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", (u -> columns)-1);
+    if (column < 0 || column >= columns) {
+        fprintf(stderr, "Error: Invalid index given. Only columns 0 to %d exist\n", columns-1);
         exit(1);
-    } else if (row < 0 || row >= u -> rows) {
-        fprintf(stderr, "Error: Invalid index given. Only rows 0 to %d exist\n", (u -> rows)-1);
+    } else if (row < 0 || row >= rows) {
+        fprintf(stderr, "Error: Invalid index given. Only rows 0 to %d exist\n", rows-1);
         exit(1);
     }
 
@@ -154,19 +162,19 @@ int will_be_alive(struct universe *u, int column, int row) {
         liveNeighbours += is_alive(u, column, row+1);
 
     // Cell is bottom left
-    } else if (column == 0 && row == u -> rows-1) {
+    } else if (column == 0 && row == rows-1) {
         liveNeighbours += is_alive(u, column+1, row);
         liveNeighbours += is_alive(u, column+1, row-1);
         liveNeighbours += is_alive(u, column, row-1);
 
     // Cell is bottom right
-    } else if (column == u -> columns-1 && row == u -> rows-1) {
+    } else if (column == columns-1 && row == rows-1) {
         liveNeighbours += is_alive(u, column, row-1);
         liveNeighbours += is_alive(u, column-1, row-1);
         liveNeighbours += is_alive(u, column-1, row);
 
     // Cell is top right
-    } else if (column == u -> columns-1 && row == 0) {
+    } else if (column == columns-1 && row == 0) {
         liveNeighbours += is_alive(u, column, row+1);
         liveNeighbours += is_alive(u, column-1, row+1);
         liveNeighbours += is_alive(u, column-1, row);
@@ -188,7 +196,7 @@ int will_be_alive(struct universe *u, int column, int row) {
         liveNeighbours += is_alive(u, column, row-1);
 
     // Cell lies along bottom edge
-    } else if (row == u -> rows-1) {
+    } else if (row == rows-1) {
         liveNeighbours += is_alive(u, column+1, row);
         liveNeighbours += is_alive(u, column+1, row-1);
         liveNeighbours += is_alive(u, column, row-1);
@@ -196,7 +204,7 @@ int will_be_alive(struct universe *u, int column, int row) {
         liveNeighbours += is_alive(u, column-1, row);
 
     // Cell lies along right edge
-    } else if (column == u -> columns-1) {
+    } else if (column == columns-1) {
         liveNeighbours += is_alive(u, column, row+1);
         liveNeighbours += is_alive(u, column-1, row+1);
         liveNeighbours += is_alive(u, column-1, row);
@@ -324,13 +332,12 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
     // Update generation, numAlive and prevAvgAlive
     u -> generation += 1;
     u -> numAlive = numAlive;
-    u -> prevAvgAlive = (((u -> prevAvgAlive * (u -> generation-1)) + numAlive) / (u -> generation));
+    u -> prevAvgAlive = ((u -> prevAvgAlive * (float) ((u -> generation)-1)) + numAlive) / (float) (u -> generation);
 }
 
 void print_statistics(struct universe *u) {
     // Print percentage of cells currently alive
-    fprintf(stdout, "%.3f%% of cells currently alive\n", (float) (u -> numAlive) / ((u -> rows) * (u -> columns)));
-
+    fprintf(stdout, "%.3f%% of cells currently alive\n", ((float) (u -> numAlive) / (float) ((u -> rows) * (u -> columns)))*100);
     // Print percentage of cells alive on average across all generations
-    fprintf(stdout, "%.3f%% of cells alive on average\n", (float) (u -> prevAvgAlive) / ((u -> rows) * (u -> columns)));
+    fprintf(stdout, "%.3f%% of cells alive on average\n", ((u -> prevAvgAlive) / (float) ((u -> rows) * (u -> columns)))*100);
 }

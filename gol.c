@@ -153,10 +153,15 @@ int will_be_alive(struct universe *u, int column, int row) {
     // Initialise number of live neighbours to 0
     int liveNeighbours = 0;
 
+
+    // Handle if only one column or row exists
+    if (columns == 1 || rows == 1) {
+        return 0;
+
     // Find number of live neighbours
 
     // Cell is top left
-    if (column == 0 && row == 0) {
+    } else if (column == 0 && row == 0) {
         liveNeighbours += is_alive(u, column+1, row);
         liveNeighbours += is_alive(u, column+1, row+1);
         liveNeighbours += is_alive(u, column, row+1);

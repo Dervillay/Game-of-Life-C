@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<ctype.h>
+#include<string.h>
 #include"gol.h"
 
 int main(int argc, char *argv[]){
@@ -21,6 +22,18 @@ int main(int argc, char *argv[]){
     // Enter switch statement only for args
     if (argv[i][0] == '-') {
 
+      if(strlen(argv[i]) != 2) {
+        fprintf(stderr, "Error: %s is not a valid argument\n", argv[i]);
+        exit(1);
+      }
+
+      if (i+1 == argc) {
+        if (argv[i][1] == 'i' || argv[i][1] == 'o' || argv[i][1] == 'g') {
+          fprintf(stderr, "Error: No input given for arg -%c\n", argv[i][1]);
+          exit(1);
+        }
+      }
+
       switch(argv[i][1]) {
 
         // Handle supplied input file
@@ -38,6 +51,12 @@ int main(int argc, char *argv[]){
 
         // Handle supplied output file
         case 'o':
+          // Check output file has been provided
+          if (argv[i+1][0] == '-') {
+            fprintf(stderr, "Error: No output file was specified.\n");
+            exit(1);
+          }
+
           outfileSpecified = 1; // Set flag
           outfileName = argv[i+1]; // Get file name
           outfile = fopen(outfileName, "w"); // Open file
@@ -80,17 +99,15 @@ int main(int argc, char *argv[]){
       }
 
     // Handle unrecognised args that aren't in -arg format
-    } else {
-      if (argv[i-1][0] != '-') {
+    } else if (argv[i-1][0] != '-' || argv[i-1][1] == 's' || 
+               argv[i-1][1] == 't') {
         fprintf(stderr, "Error: %s is not a valid argument\n", argv[i]);
         exit(1);
-      }
     }
   }
 
-  // If no file given, ask for it manually
+  // If no input file given, take input manually
   if (!infileSpecified) {
-    printf("No input file provided. Please manually enter an initial universe configuration:\n");
     infile = stdin;
   }
 

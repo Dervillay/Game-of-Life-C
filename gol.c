@@ -4,7 +4,7 @@
 #include"gol.h"
 
 void read_in_file(FILE *infile, struct universe *u) {
-    char line[514]; // Initialise list to hold max 512 characters (\r and \n characters)
+    char line[514]; // Initialise list to hold max 512 characters (plus potential \r and \n characters)
     int array_size = 1; // Set abritrary starting size for input
     int i = 0; // Track num of rows in file
     int lineLen = 0; // Track length of each row (num of columns)
@@ -63,7 +63,6 @@ void read_in_file(FILE *infile, struct universe *u) {
         // Allocate enough space in cells[i] for each char in the current line
         if ((u -> cells[i] = realloc(u -> cells[i], lineLen * sizeof(char*))) == NULL) {
             fprintf(stderr, "Error: Ran out of memory\n");
-            free(u); // Free u from memory
             exit(1);
         }
 
@@ -89,9 +88,6 @@ void read_in_file(FILE *infile, struct universe *u) {
         i += 1;
         prevLineLen = lineLen;
     }
-
-    // Close file after reading
-    fclose(infile);
 
     // Set number of rows and columns in u
     u -> rows = i;

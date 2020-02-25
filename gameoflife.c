@@ -129,11 +129,6 @@ int main(int argc, char *argv[]){
   // If no output file specified, output to stdout
   if (!outfileSpecified) {
     outfile = stdout;
-
-    // If no input, add linebreak for neatness
-    if (!infileSpecified) {
-      printf("\n");
-    }
   }
 
   // Write result to outfile

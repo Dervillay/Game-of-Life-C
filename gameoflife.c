@@ -73,7 +73,6 @@ int main(int argc, char *argv[]){
           // Check supplied argument is a number
           for (int j = 0; argv[i+1][j] != '\0'; j++) {
             if (!isdigit(argv[i+1][j])) {
-              printf("%c\n", argv[i+1][j]);
               fprintf(stderr, "Error: -g argument received an invalid value, please check the value supplied is an integer.\n");
               exit(1);
             }

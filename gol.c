@@ -332,7 +332,7 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
     // Update generation, numAlive and prevAvgAlive
     u -> generation += 1;
     u -> numAlive = numAlive;
-    u -> prevAvgAlive = ((u -> prevAvgAlive * (float) ((u -> generation)-1)) + numAlive) / (float) (u -> generation);
+    u -> prevAvgAlive = (float) ((u -> prevAvgAlive * ((u -> generation)-1)) + numAlive) / (u -> generation);
 }
 
 void print_statistics(struct universe *u) {

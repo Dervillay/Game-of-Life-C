@@ -42,9 +42,9 @@ The file `glider.txt` has been given as an example:
 ## Arguments
 - `-i input_file.txt` takes `input_file.txt` as input. If not specified, the program will expect the user to provide an input line by line instead
 - `-o output_file.txt` will write the output to `output_file.txt`, or to stdout if not specified 
-- `-g num_generations` will run the input through `num_generations` iterations before returning an output, if not specified this will default to 5
-- `-s` will print the percentage of total cells alive on average across generations and in percentage alive in the final generation
-- `-t` will treat the grid as if it were a torus, i.e. that each cell along a border is neighbouring the cells on the opposite border (imagine Pac-Man). If not specified, the grid is treated as if there is an additional layer of dead cells surrounding it
+- `-g num_generations` will run the input through `num_generations` iterations before returning an output. If not specified this will default to 5
+- `-s` will print the percentage of total cells alive on average across generations along with the percentage of cells alive in the final generation
+- `-t` will treat the grid as if it were a torus, i.e. that each cell along a border is neighbouring the cells on the opposite border (imagine the way Pac-Man works). If not specified, the grid is treated as if there is an additional layer of dead cells surrounding it
 
 
 
